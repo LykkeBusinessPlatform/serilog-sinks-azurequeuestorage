@@ -22,13 +22,4 @@ Global
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E4C73792-90BE-45C9-8DDB-168142A9AD7A}
 	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 2
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://dev.azure.com/sector7g
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = Serilog.Sinks.AzureQueueStorage\\Serilog.Sinks.AzureQueueStorage.csproj
-		SccProjectName1 = Serilog.Sinks.AzureQueueStorage
-		SccLocalPath1 = Serilog.Sinks.AzureQueueStorage
-	EndGlobalSection
 EndGlobal
