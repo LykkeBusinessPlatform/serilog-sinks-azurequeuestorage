@@ -1,6 +1,6 @@
 # Sector7G.Serilog.Sinks.AzureQueueStorage [![Build Status](https://dev.azure.com/sector7g/Serilog.Sinks.AzureQueueStorage/_apis/build/status/Serilog.Sinks.AzureQueueStorage-.NET%20Desktop-CI)](https://dev.azure.com/sector7g/Serilog.Sinks.AzureQueueStorage/_build/latest?definitionId=12)
 
-            **Platforms**: .NET 4.6.1 & .NET Core 2.1
+            Platforms: .NET 4.6.1 & .NET Core 2.1
 
             Implementation of an Azure storage queue sink based off the Azure table storage sink:
             https://github.com/serilog/serilog-sinks-azuretablestorage
