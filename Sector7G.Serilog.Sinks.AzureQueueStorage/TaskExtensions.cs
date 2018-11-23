@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Serilog.Sinks.AzureQueueStorage
+namespace Sector7G.Serilog.Sinks.AzureQueueStorage
 {
     public static class TaskExtensions
     {

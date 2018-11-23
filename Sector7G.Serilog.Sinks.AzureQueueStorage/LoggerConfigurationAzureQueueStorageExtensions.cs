@@ -23,7 +23,7 @@ using Serilog.Sinks.AzureQueueStorage;
 using Serilog.Sinks.AzureQueueStorage.AzureQueueProvider;
 using Serilog.Formatting.Json;
 
-namespace Serilog
+namespace Sector7G.Serilog
 {
     /// <summary>
     /// Adds the WriteTo.AzureQueueStorage() extension method to <see cref="LoggerConfiguration"/>.

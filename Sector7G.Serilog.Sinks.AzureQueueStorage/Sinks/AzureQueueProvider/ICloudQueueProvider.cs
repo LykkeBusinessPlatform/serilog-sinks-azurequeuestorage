@@ -15,7 +15,7 @@
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace Serilog.Sinks.AzureQueueStorage.AzureQueueProvider
+namespace Sector7G.Serilog.Sinks.AzureQueueStorage.AzureQueueProvider
 {
     public interface ICloudQueueProvider
     {
