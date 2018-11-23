@@ -1,4 +1,4 @@
-﻿// Copyright 2018 Sector 7G Communications
+﻿// Copyright 2018 Sector 7G Consulting LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ using Newtonsoft.Json;
 namespace Serilog.Sinks.AzureQueueStorage
 {
     /// <summary>
-    /// Writes log events as records to an Azure Queue Storage table.
+    /// Writes log events as records to an Azure Queue Storage queue.
     /// </summary>
     public class AzureQueueStorageSink : ILogEventSink
     {
@@ -40,12 +40,12 @@ namespace Serilog.Sinks.AzureQueueStorage
         /// <summary>
         /// Construct a sink that saves logs to the specified storage account.
         /// </summary>
-        /// <param name="storageAccount">The Cloud Storage Account to use to insert the log entries to.</param>
+        /// <param name="storageAccount">The Cloud Storage Account containing the queue.</param>
         /// <param name="textFormatter"></param>
-        /// <param name="storageQueueName">Queue name that log entries will be written to.</param>
+        /// <param name="storageQueueName">Queue name that messages will be written to.</param>
         /// <param name="keyGenerator">generator used to generate partition keys and row keys</param>
-        /// <param name="bypassQueueCreationValidation">Bypass the exception in case the table creation fails.</param>
-        /// <param name="cloudQueueProvider">Cloud queue provider to get current log table.</param>
+        /// <param name="bypassQueueCreationValidation">Bypass the exception in case the queue creation fails.</param>
+        /// <param name="cloudQueueProvider">Cloud queue provider to get current queue.</param>
         public AzureQueueStorageSink(
             CloudStorageAccount storageAccount,
             ITextFormatter textFormatter,
