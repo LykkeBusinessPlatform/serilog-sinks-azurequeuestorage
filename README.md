@@ -1,4 +1,4 @@
-# Serilog.Sinks.AzureQueueStorage [![Build Status](https://dev.azure.com/sector7g/Serilog.Sinks.AzureQueueStorage/_apis/build/status/Serilog.Sinks.AzureQueueStorage-.NET%20Desktop-CI)](https://dev.azure.com/sector7g/Serilog.Sinks.AzureQueueStorage/_build/latest?definitionId=12)
+# Serilog.Sinks.AzureQueueStorage [![Build status](https://ci.appveyor.com/api/projects/status/5hpbs9mkxye9blvk/branch/master?svg=true)](https://ci.appveyor.com/project/gjbdebug/serilog-sinks-azurequeuestorage/branch/master)
 
 Writes to a queue in [Windows Azure Queue Storage](https://docs.microsoft.com/en-us/azure/storage/queues/storage-dotnet-how-to-use-queues).
 
