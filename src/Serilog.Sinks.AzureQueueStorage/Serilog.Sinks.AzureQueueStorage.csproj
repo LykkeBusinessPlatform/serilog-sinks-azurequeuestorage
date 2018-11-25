@@ -1,7 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+    <Description>Logs messages to an Azure storage queue</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/gjbdebug/serilog-sinks-azurequeuestorage</PackageProjectUrl>
+    <PackageIconUrl>http://www.sector7g.com/images/serilog-sink-nuget.png</PackageIconUrl>
+    <PackageLicenseUrl>https://github.com/gjbdebug/serilog-sinks-azurequeuestorage/blob/master/LICENSE</PackageLicenseUrl>
+    <Copyright>(c) 2018 Serilog Contributors</Copyright>
+    <RepositoryUrl>https://github.com/gjbdebug/serilog-sinks-azurequeuestorage</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <AssemblyVersion>0.2.0.0</AssemblyVersion>
+    <FileVersion>0.2.0.0</FileVersion>
+    <Version>0.2.0</Version>
+    <Authors>gjbdebug serilog</Authors>
+    <Company>Serilog</Company>
+    <Product />
   </PropertyGroup>
 
   <ItemGroup>
