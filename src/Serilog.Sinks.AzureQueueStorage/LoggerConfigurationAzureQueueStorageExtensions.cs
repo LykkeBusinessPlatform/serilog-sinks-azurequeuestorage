@@ -1,4 +1,4 @@
-﻿// Copyright 2018 Sector7G Communications
+﻿// Copyright 2018 Serilog Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ using Serilog.Sinks.AzureQueueStorage;
 using Serilog.Sinks.AzureQueueStorage.AzureQueueProvider;
 using Serilog.Formatting.Json;
 
-namespace Sector7G.Serilog
+namespace Serilog
 {
     /// <summary>
     /// Adds the WriteTo.AzureQueueStorage() extension method to <see cref="LoggerConfiguration"/>.

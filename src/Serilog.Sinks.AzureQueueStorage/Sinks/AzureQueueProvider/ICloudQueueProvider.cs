@@ -1,4 +1,4 @@
-﻿// Copyright 2018 Sector 7G Consulting LLC
+﻿// Copyright 2018 Serilog Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace Sector7G.Serilog.Sinks.AzureQueueStorage.AzureQueueProvider
+namespace Serilog.Sinks.AzureQueueStorage.AzureQueueProvider
 {
     public interface ICloudQueueProvider
     {

@@ -1,4 +1,4 @@
-﻿// Copyright 2018 Sector 7G Communications
+﻿// Copyright 2018 Serilog Contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ using System.Threading;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace Sector7G.Serilog.Sinks.AzureQueueStorage.AzureQueueProvider
+namespace Serilog.Sinks.AzureQueueStorage.AzureQueueProvider
 {
     class DefaultCloudQueueProvider : ICloudQueueProvider
     {
@@ -28,8 +28,8 @@ namespace Sector7G.Serilog.Sinks.AzureQueueStorage.AzureQueueProvider
         {
             if (_cloudQueue == null)
             {
-                var cloudTableClient = storageAccount.CreateCloudQueueClient();
-                _cloudQueue = cloudTableClient.GetQueueReference(storageQueueName);
+                var cloudQueueClient = storageAccount.CreateCloudQueueClient();
+                _cloudQueue = cloudQueueClient.GetQueueReference(storageQueueName);
 
                 // In some cases (e.g.: SAS URI), we might not have enough permissions to create the queue if
                 // it does not already exists. So, if we are in that case, we ignore the error as per bypassQueueCreationValidation.
