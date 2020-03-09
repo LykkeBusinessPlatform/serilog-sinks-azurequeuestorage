@@ -80,11 +80,15 @@ namespace Serilog.Sinks.AzureQueueStorage
         /// <param name="logEvent">The log event to write.</param>
         public void Emit(LogEvent logEvent)
         {
+            TextWriter writer = new StringWriter();
+            _textFormatter.Format(logEvent,writer);
+            var output = writer.ToString();
+
             var queue = _cloudQueueProvider.GetCloudQueue(_storageAccount, _storageQueueName, _bypassQueueCreationValidation);
 
             CloudQueueClient queueClient = _storageAccount.CreateCloudQueueClient();
             CloudQueue storageQueueName = queueClient.GetQueueReference(_storageQueueName);
-            CloudQueueMessage message = new CloudQueueMessage(JsonConvert.SerializeObject(logEvent));
+            CloudQueueMessage message = new CloudQueueMessage(output);
 
             queue.AddMessageAsync(message)
                 .SyncContextSafeWait(_waitTimeoutMilliseconds);
