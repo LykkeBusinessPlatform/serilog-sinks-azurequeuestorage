@@ -53,7 +53,7 @@ namespace Serilog.Sinks.AzureQueueStorage
         private readonly bool _separateQueuesByLogLevel;
         private readonly ICloudQueueProvider _cloudQueueProvider;
         private readonly CloudQueue _queue;
-        private readonly ConcurrentDictionary<LogEventLevel, CloudQueue> _queuesDictionary;
+        private readonly ConcurrentDictionary<string, CloudQueue> _queuesDictionary;
 
         /// <summary>
         /// Construct a sink that saves logs to the specified storage account.
@@ -79,7 +79,7 @@ namespace Serilog.Sinks.AzureQueueStorage
             _separateQueuesByLogLevel = separateQueuesByLogLevel;
             _cloudQueueProvider = cloudQueueProvider ?? new DefaultCloudQueueProvider();
             if (separateQueuesByLogLevel)
-                _queuesDictionary = new ConcurrentDictionary<LogEventLevel, CloudQueue>();
+                _queuesDictionary = new ConcurrentDictionary<string, CloudQueue>();
             else
                 _queue = _cloudQueueProvider.GetCloudQueue(_storageAccount, _storageQueueName, _bypassQueueCreationValidation);
         }
@@ -107,15 +107,19 @@ namespace Serilog.Sinks.AzureQueueStorage
             if (!_separateQueuesByLogLevel)
                 return _queue;
 
-            if (_queuesDictionary.TryGetValue(level, out var queue))
+            var logLevelSuffix = GetLogLevelSuffix(level, properties);
+
+            if (_queuesDictionary.TryGetValue(logLevelSuffix, out var queue))
                 return queue;
+
+            var queueName = $"{_storageQueueName}-{logLevelSuffix}";
 
             queue = _cloudQueueProvider.GetCloudQueue(
                 _storageAccount,
-                $"{_storageQueueName}-{GetLogLevelSuffix(level, properties)}",
+                queueName,
                 _bypassQueueCreationValidation);
 
-            _queuesDictionary.TryAdd(level, queue);
+            _queuesDictionary.TryAdd(logLevelSuffix, queue);
 
             return queue;
         }
@@ -144,4 +148,3 @@ namespace Serilog.Sinks.AzureQueueStorage
         }
     }
 }
-

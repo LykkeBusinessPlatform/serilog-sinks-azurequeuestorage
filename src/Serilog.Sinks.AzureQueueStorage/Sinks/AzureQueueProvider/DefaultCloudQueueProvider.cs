@@ -36,31 +36,25 @@ namespace Serilog.Sinks.AzureQueueStorage.AzureQueueProvider
     class DefaultCloudQueueProvider : ICloudQueueProvider
     {
         readonly int _waitTimeoutMilliseconds = Timeout.Infinite;
-        CloudQueue _cloudQueue;
 
         public CloudQueue GetCloudQueue(CloudStorageAccount storageAccount, string storageQueueName, bool bypassQueueCreationValidation)
         {
-            if (_cloudQueue == null)
-            {
-                var cloudQueueClient = storageAccount.CreateCloudQueueClient();
-                _cloudQueue = cloudQueueClient.GetQueueReference(storageQueueName);
+            var cloudQueueClient = storageAccount.CreateCloudQueueClient();
+            var cloudQueue = cloudQueueClient.GetQueueReference(storageQueueName);
 
-                // In some cases (e.g.: SAS URI), we might not have enough permissions to create the queue if
-                // it does not already exists. So, if we are in that case, we ignore the error as per bypassQueueCreationValidation.
-                try
-                {
-                    _cloudQueue.CreateIfNotExistsAsync().SyncContextSafeWait(_waitTimeoutMilliseconds);
-                }
-                catch (Exception ex)
-                {
-                    Debugging.SelfLog.WriteLine($"Failed to create queue: {ex}");
-                    if (!bypassQueueCreationValidation)
-                    {
-                        throw;
-                    }
-                }
+            // In some cases (e.g.: SAS URI), we might not have enough permissions to create the queue if
+            // it does not already exists. So, if we are in that case, we ignore the error as per bypassQueueCreationValidation.
+            try
+            {
+                cloudQueue.CreateIfNotExistsAsync().SyncContextSafeWait(_waitTimeoutMilliseconds);
             }
-            return _cloudQueue;
+            catch (Exception ex)
+            {
+                Debugging.SelfLog.WriteLine($"Failed to create queue: {ex}");
+                if (!bypassQueueCreationValidation)
+                    throw;
+            }
+            return cloudQueue;
         }
     }
 }
