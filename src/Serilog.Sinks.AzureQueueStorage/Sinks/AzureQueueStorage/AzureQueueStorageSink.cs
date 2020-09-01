@@ -26,7 +26,7 @@
 // See NOTICES accompanying this package for any third party attribution.
 //
 
-using System;
+using System.IO;
 using System.Threading;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -34,8 +34,6 @@ using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting;
 using Serilog.Sinks.AzureQueueStorage.AzureQueueProvider;
-
-using Newtonsoft.Json;
 
 namespace Serilog.Sinks.AzureQueueStorage
 {
