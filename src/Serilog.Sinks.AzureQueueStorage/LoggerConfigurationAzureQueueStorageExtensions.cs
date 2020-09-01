@@ -45,30 +45,15 @@ namespace Serilog
     public static class LoggerConfigurationAzureQueueStorageExtensions
     {
         /// <summary>
-        /// A reasonable default for the number of events posted in
-        /// each batch.
-        /// </summary>
-        //public const int DefaultBatchPostingLimit = 50;
-
-        /// <summary>
-        /// A reasonable default time to wait between checking for event batches.
-        /// </summary>
-        //public static readonly TimeSpan DefaultPeriod = TimeSpan.FromSeconds(2);
-
-        /// <summary>
         /// Adds a sink that writes log events as records in an Azure Table Storage table (default LogEventEntity) using the given storage account.
         /// </summary>
         /// <param name="loggerConfiguration">The logger configuration.</param>
         /// <param name="storageAccount">The Cloud Storage Account to use to insert the log entries to.</param>
         /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
         /// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
-        /// <param name="storageTableName">Table name that log entries will be written to. Note: Optional, setting this may impact performance</param>
-        /// <param name="writeInBatches">Use a periodic batching sink, as opposed to a synchronous one-at-a-time sink; this alters the partition
-        /// key used for the events so is not enabled by default.</param>
-        /// <param name="batchPostingLimit">The maximum number of events to post in a single batch.</param>
-        /// <param name="period">The time to wait between checking for event batches.</param>
-        /// <param name="keyGenerator">The key generator used to create the PartitionKey and the RowKey for each log entry</param>
+        /// <param name="storageQueueName">Storage queue name.</param>
         /// <param name="bypassTableCreationValidation">Bypass the exception in case the table creation fails.</param>
+        /// <param name="separateQueuesByLogLevel">Flag for several queues usage by log level.</param>
         /// <param name="cloudQueueProvider">Cloud table provider to get current log table.</param>
         /// <returns>Logger configuration, allowing configuration to continue.</returns>
         /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
@@ -79,6 +64,7 @@ namespace Serilog
             IFormatProvider formatProvider = null,
             string storageQueueName = null,
             bool bypassTableCreationValidation = false,
+            bool separateQueuesByLogLevel = false,
             ICloudQueueProvider cloudQueueProvider = null)
         {
             if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
@@ -90,6 +76,7 @@ namespace Serilog
                 restrictedToMinimumLevel,
                 storageQueueName,
                 bypassTableCreationValidation,
+                separateQueuesByLogLevel,
                 cloudQueueProvider);
         }
 
@@ -101,13 +88,9 @@ namespace Serilog
         /// <param name="connectionString">The Cloud Storage Account connection string to use to insert the log entries to.</param>
         /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
         /// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
-        /// <param name="storageTableName">Table name that log entries will be written to. Note: Optional, setting this may impact performance</param>
-        /// <param name="writeInBatches">Use a periodic batching sink, as opposed to a synchronous one-at-a-time sink; this alters the partition
-        /// key used for the events so is not enabled by default.</param>
-        /// <param name="batchPostingLimit">The maximum number of events to post in a single batch.</param>
-        /// <param name="period">The time to wait between checking for event batches.</param>
-        /// <param name="keyGenerator">The key generator used to create the PartitionKey and the RowKey for each log entry</param>
+        /// <param name="storageQueueName">Storage queue name.</param>
         /// <param name="bypassTableCreationValidation">Bypass the exception in case the table creation fails.</param>
+        /// <param name="separateQueuesByLogLevel">Flag for several queues usage by log level.</param>
         /// <param name="cloudQueueProvider">Cloud table provider to get current log table.</param>
         /// <returns>Logger configuration, allowing configuration to continue.</returns>
         /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
@@ -117,11 +100,8 @@ namespace Serilog
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             IFormatProvider formatProvider = null,
             string storageQueueName = null,
-            //bool writeInBatches = false,
-            //TimeSpan? period = null,
-            //int? batchPostingLimit = null,
-            //IKeyGenerator keyGenerator = null,
             bool bypassTableCreationValidation = false,
+            bool separateQueuesByLogLevel = false,
             ICloudQueueProvider cloudQueueProvider = null)
         {
             if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
@@ -133,6 +113,7 @@ namespace Serilog
                 restrictedToMinimumLevel,
                 storageQueueName,
                 bypassTableCreationValidation,
+                separateQueuesByLogLevel,
                 cloudQueueProvider);
         }
 
@@ -143,15 +124,9 @@ namespace Serilog
         /// <param name="loggerConfiguration">The logger configuration.</param>
         /// <param name="sharedAccessSignature">The storage account/table SAS key.</param>
         /// <param name="accountName">The storage account name.</param>
-        /// <param name="tableEndpoint">The (optional) table endpoint. Only needed for testing.</param>
         /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
         /// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
-        /// <param name="storageTableName">Table name that log entries will be written to. Note: Optional, setting this may impact performance</param>
-        /// <param name="writeInBatches">Use a periodic batching sink, as opposed to a synchronous one-at-a-time sink; this alters the partition
-        /// key used for the events so is not enabled by default.</param>
-        /// <param name="batchPostingLimit">The maximum number of events to post in a single batch.</param>
-        /// <param name="period">The time to wait between checking for event batches.</param>
-        /// <param name="keyGenerator">The key generator used to create the PartitionKey and the RowKey for each log entry</param>
+        /// <param name="storageQueueName">Storage queue name.</param>
         /// <param name="cloudQueueProvider">Cloud table provider to get current log table.</param>
         /// <returns>Logger configuration, allowing configuration to continue.</returns>
         /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
@@ -185,23 +160,20 @@ namespace Serilog
         /// <param name="formatter">Use a Serilog ITextFormatter such as CompactJsonFormatter to store object in data column of Azure table</param>
         /// <param name="storageAccount">The Cloud Storage Account to use to insert the log entries to.</param>
         /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
-        /// <param name="storageTableName">Table name that log entries will be written to. Note: Optional, setting this may impact performance</param>
-        /// <param name="writeInBatches">Use a periodic batching sink, as opposed to a synchronous one-at-a-time sink; this alters the partition
-        /// key used for the events so is not enabled by default.</param>
-        /// <param name="batchPostingLimit">The maximum number of events to post in a single batch.</param>
-        /// <param name="period">The time to wait between checking for event batches.</param>
-        /// <param name="keyGenerator">The key generator used to create the PartitionKey and the RowKey for each log entry</param>
+        /// <param name="storageQueueName">Storage queue name.</param>
         /// <param name="bypassTableCreationValidation">Bypass the exception in case the table creation fails.</param>
+        /// <param name="separateQueuesByLogLevel">Flag for several queues usage by log level.</param>
         /// <param name="cloudQueueProvider">Cloud table provider to get current log table.</param>
         /// <returns>Logger configuration, allowing configuration to continue.</returns>
         /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
         public static LoggerConfiguration AzureQueueStorage(
             this LoggerSinkConfiguration loggerConfiguration,
             ITextFormatter formatter,
-            CloudStorageAccount storageAccount,            
+            CloudStorageAccount storageAccount,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             string storageQueueName = null,
             bool bypassTableCreationValidation = false,
+            bool separateQueuesByLogLevel = false,
             ICloudQueueProvider cloudQueueProvider = null)
         {
             if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
@@ -211,7 +183,13 @@ namespace Serilog
             ILogEventSink sink;
             try
             {
-                sink = new AzureQueueStorageSink(storageAccount, formatter, storageQueueName, bypassTableCreationValidation, cloudQueueProvider);
+                sink = new AzureQueueStorageSink(
+                    storageAccount,
+                    formatter,
+                    storageQueueName,
+                    bypassTableCreationValidation,
+                    separateQueuesByLogLevel,
+                    cloudQueueProvider);
             }
             catch (Exception ex)
             {
@@ -230,23 +208,20 @@ namespace Serilog
         /// <param name="formatter">Use a Serilog ITextFormatter such as CompactJsonFormatter to store object in data column of Azure table</param>
         /// <param name="connectionString">The Cloud Storage Account connection string to use to insert the log entries to.</param>
         /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
-        /// <param name="storageTableName">Table name that log entries will be written to. Note: Optional, setting this may impact performance</param>
-        /// <param name="writeInBatches">Use a periodic batching sink, as opposed to a synchronous one-at-a-time sink; this alters the partition
-        /// key used for the events so is not enabled by default.</param>
-        /// <param name="batchPostingLimit">The maximum number of events to post in a single batch.</param>
-        /// <param name="period">The time to wait between checking for event batches.</param>
-        /// <param name="keyGenerator">The key generator used to create the PartitionKey and the RowKey for each log entry</param>
+        /// <param name="storageQueueName">Storage queue name.</param>
         /// <param name="bypassTableCreationValidation">Bypass the exception in case the table creation fails.</param>
+        /// <param name="separateQueuesByLogLevel">Flag for several queues usage by log level.</param>
         /// <param name="cloudQueueProvider">Cloud table provider to get current log table.</param>
         /// <returns>Logger configuration, allowing configuration to continue.</returns>
         /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
         public static LoggerConfiguration AzureQueueStorage(
             this LoggerSinkConfiguration loggerConfiguration,
             ITextFormatter formatter,
-            string connectionString,            
+            string connectionString,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             string storageQueueName = null,
             bool bypassTableCreationValidation = false,
+            bool separateQueuesByLogLevel = false,
             ICloudQueueProvider cloudQueueProvider = null)
         {
             if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
@@ -256,7 +231,15 @@ namespace Serilog
             try
             {
                 var storageAccount = CloudStorageAccount.Parse(connectionString);
-                return AzureQueueStorage(loggerConfiguration, formatter, storageAccount, restrictedToMinimumLevel, storageQueueName, bypassTableCreationValidation, cloudQueueProvider);
+                return AzureQueueStorage(
+                    loggerConfiguration,
+                    formatter,
+                    storageAccount,
+                    restrictedToMinimumLevel,
+                    storageQueueName,
+                    bypassTableCreationValidation,
+                    separateQueuesByLogLevel,
+                    cloudQueueProvider);
             }
             catch (Exception ex)
             {
@@ -275,14 +258,8 @@ namespace Serilog
         /// <param name="formatter">Use a Serilog ITextFormatter such as CompactJsonFormatter to store object in data column of Azure table</param>
         /// <param name="sharedAccessSignature">The storage account/table SAS key.</param>
         /// <param name="accountName">The storage account name.</param>
-        /// <param name="tableEndpoint">The (optional) table endpoint. Only needed for testing.</param>
         /// <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
-        /// <param name="storageTableName">Table name that log entries will be written to. Note: Optional, setting this may impact performance</param>
-        /// <param name="writeInBatches">Use a periodic batching sink, as opposed to a synchronous one-at-a-time sink; this alters the partition
-        /// key used for the events so is not enabled by default.</param>
-        /// <param name="batchPostingLimit">The maximum number of events to post in a single batch.</param>
-        /// <param name="period">The time to wait between checking for event batches.</param>
-        /// <param name="keyGenerator">The key generator used to create the PartitionKey and the RowKey for each log entry</param>
+        /// <param name="storageQueueName">Storage queue name.</param>
         /// <param name="cloudQueueProvider">Cloud table provider to get current log table.</param>
         /// <returns>Logger configuration, allowing configuration to continue.</returns>
         /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
@@ -290,7 +267,7 @@ namespace Serilog
             this LoggerSinkConfiguration loggerConfiguration,
             ITextFormatter formatter,
             string sharedAccessSignature,
-            string accountName,           
+            string accountName,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             string storageQueueName = null,
             ICloudQueueProvider cloudQueueProvider = null)
@@ -307,7 +284,15 @@ namespace Serilog
 
 
                 // We set bypassTableCreationValidation to true explicitly here as the the SAS URL might not have enough permissions to query if the table exists.
-                return AzureQueueStorage(loggerConfiguration, formatter, storageAccount, restrictedToMinimumLevel, storageQueueName, true, cloudQueueProvider);
+                return AzureQueueStorage(
+                    loggerConfiguration,
+                    formatter,
+                    storageAccount,
+                    restrictedToMinimumLevel,
+                    storageQueueName,
+                    true,
+                    false,
+                    cloudQueueProvider);
             }
             catch (Exception ex)
             {

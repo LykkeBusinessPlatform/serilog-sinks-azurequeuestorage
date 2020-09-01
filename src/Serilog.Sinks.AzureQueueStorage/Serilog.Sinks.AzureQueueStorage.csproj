@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -10,9 +10,7 @@
     <Copyright>(c) 2018 Serilog Contributors</Copyright>
     <RepositoryUrl>https://github.com/gjbdebug/serilog-sinks-azurequeuestorage</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <AssemblyVersion>0.2.0.0</AssemblyVersion>
-    <FileVersion>0.2.0.0</FileVersion>
-    <Version>0.2.0</Version>
+    <Version>1.1.0</Version>
     <Authors>gjbdebug serilog</Authors>
     <Company>Serilog</Company>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>

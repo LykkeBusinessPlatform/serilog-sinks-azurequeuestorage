@@ -26,6 +26,9 @@
 // See NOTICES accompanying this package for any third party attribution.
 //
 
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Microsoft.WindowsAzure.Storage;
@@ -42,12 +45,15 @@ namespace Serilog.Sinks.AzureQueueStorage
     /// </summary>
     public class AzureQueueStorageSink : ILogEventSink
     {
-        readonly int _waitTimeoutMilliseconds = Timeout.Infinite;
-        readonly ITextFormatter _textFormatter;
-        readonly CloudStorageAccount _storageAccount;
-        readonly string _storageQueueName;
-        readonly bool _bypassQueueCreationValidation;
-        readonly ICloudQueueProvider _cloudQueueProvider;
+        private readonly int _waitTimeoutMilliseconds = Timeout.Infinite;
+        private readonly ITextFormatter _textFormatter;
+        private readonly CloudStorageAccount _storageAccount;
+        private readonly string _storageQueueName;
+        private readonly bool _bypassQueueCreationValidation;
+        private readonly bool _separateQueuesByLogLevel;
+        private readonly ICloudQueueProvider _cloudQueueProvider;
+        private readonly CloudQueue _queue;
+        private readonly ConcurrentDictionary<LogEventLevel, CloudQueue> _queuesDictionary;
 
         /// <summary>
         /// Construct a sink that saves logs to the specified storage account.
@@ -55,21 +61,27 @@ namespace Serilog.Sinks.AzureQueueStorage
         /// <param name="storageAccount">The Cloud Storage Account containing the queue.</param>
         /// <param name="textFormatter"></param>
         /// <param name="storageQueueName">Queue name that messages will be written to.</param>
-        /// <param name="keyGenerator">generator used to generate partition keys and row keys</param>
         /// <param name="bypassQueueCreationValidation">Bypass the exception in case the queue creation fails.</param>
+        /// <param name="separateQueuesByLogLevel">Flag for several queues usage by log level</param>
         /// <param name="cloudQueueProvider">Cloud queue provider to get current queue.</param>
         public AzureQueueStorageSink(
             CloudStorageAccount storageAccount,
             ITextFormatter textFormatter,
             string storageQueueName = null,
             bool bypassQueueCreationValidation = false,
+            bool separateQueuesByLogLevel = false,
             ICloudQueueProvider cloudQueueProvider = null)
         {
             _textFormatter = textFormatter;
             _storageAccount = storageAccount;
             _storageQueueName = storageQueueName;
             _bypassQueueCreationValidation = bypassQueueCreationValidation;
+            _separateQueuesByLogLevel = separateQueuesByLogLevel;
             _cloudQueueProvider = cloudQueueProvider ?? new DefaultCloudQueueProvider();
+            if (separateQueuesByLogLevel)
+                _queuesDictionary = new ConcurrentDictionary<LogEventLevel, CloudQueue>();
+            else
+                _queue = _cloudQueueProvider.GetCloudQueue(_storageAccount, _storageQueueName, _bypassQueueCreationValidation);
         }
 
         /// <summary>
@@ -79,17 +91,56 @@ namespace Serilog.Sinks.AzureQueueStorage
         public void Emit(LogEvent logEvent)
         {
             TextWriter writer = new StringWriter();
-            _textFormatter.Format(logEvent,writer);
+            _textFormatter.Format(logEvent, writer);
             var output = writer.ToString();
 
-            var queue = _cloudQueueProvider.GetCloudQueue(_storageAccount, _storageQueueName, _bypassQueueCreationValidation);
-
-            CloudQueueClient queueClient = _storageAccount.CreateCloudQueueClient();
-            CloudQueue storageQueueName = queueClient.GetQueueReference(_storageQueueName);
             CloudQueueMessage message = new CloudQueueMessage(output);
+
+            var queue = GetQueue(logEvent.Level, logEvent.Properties);
 
             queue.AddMessageAsync(message)
                 .SyncContextSafeWait(_waitTimeoutMilliseconds);
+        }
+
+        private CloudQueue GetQueue(LogEventLevel level, IReadOnlyDictionary<string, LogEventPropertyValue> properties)
+        {
+            if (!_separateQueuesByLogLevel)
+                return _queue;
+
+            if (_queuesDictionary.TryGetValue(level, out var queue))
+                return queue;
+
+            queue = _cloudQueueProvider.GetCloudQueue(
+                _storageAccount,
+                $"{_storageQueueName}-{GetLogLevelSuffix(level, properties)}",
+                _bypassQueueCreationValidation);
+
+            _queuesDictionary.TryAdd(level, queue);
+
+            return queue;
+        }
+
+        private string GetLogLevelSuffix(LogEventLevel level, IReadOnlyDictionary<string, LogEventPropertyValue> properties)
+        {
+            switch (level)
+            {
+                case LogEventLevel.Verbose:
+                    return "trace";
+                case LogEventLevel.Debug:
+                    return "debug";
+                case LogEventLevel.Information:
+                    return "information";
+                case LogEventLevel.Warning:
+                    if (properties.ContainsKey("Monitor"))
+                        return "monitor";
+                    return "warning";
+                case LogEventLevel.Error:
+                    return "error";
+                case LogEventLevel.Fatal:
+                    return "critical";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(level), level, null);
+            }
         }
     }
 }
