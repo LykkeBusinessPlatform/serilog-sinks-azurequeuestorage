@@ -15,11 +15,15 @@
     <Version>0.2.0</Version>
     <Authors>gjbdebug serilog</Authors>
     <Company>Serilog</Company>
-    <Product />
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageId>LykkeBiz.Serilog.Sinks.AzureQueueStorage</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Serilog" Version="2.7.1" />
     <PackageReference Include="Serilog.Sinks.PeriodicBatching" Version="2.1.1" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.2" />
